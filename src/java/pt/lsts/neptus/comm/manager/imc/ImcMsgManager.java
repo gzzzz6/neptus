@@ -1288,6 +1288,7 @@ CommBaseManager<IMCMessage, MessageInfo, SystemImcMsgCommInfo, ImcId16, CommMana
         }
 
         // Lets wrap the possible listener in our internal one for frequency count for to send and sent messages
+        //将可用的监听器封装到内部监听器中，用来统计待发送与已发送消息的收发频次
         MessageDeliveryListener listener = wrapMessageDeliveryListenerForSentMessageCounter(systemCommId, msgListener,
                 message);
 
@@ -1298,7 +1299,7 @@ CommBaseManager<IMCMessage, MessageInfo, SystemImcMsgCommInfo, ImcId16, CommMana
             return false;
         }
 
-        // if authority OFF don't send messages to it
+        // if authority OFF don't send messages to it 若授权状态为关闭，则不向其发送消息
         ImcSystem resSys = ImcSystemsHolder.lookupSystem(systemCommId);
         if (resSys != null) {
             if (resSys.getAuthorityState() == ImcSystem.IMCAuthorityState.OFF) {
@@ -1319,6 +1320,7 @@ CommBaseManager<IMCMessage, MessageInfo, SystemImcMsgCommInfo, ImcId16, CommMana
         //        bus.post(message);
 
         // Check if is requested to send by Multicast and/or Broadcast, if yes don't send by any other way
+        //检查发送请求是否为组播或广播；若是，则不再使用其他任何通道发送
         if (sendProperties != null
                 && (StringUtils.isTokenInList(sendProperties, "Multicast") || StringUtils.isTokenInList(sendProperties,
                         "Broadcast"))) {
@@ -1370,7 +1372,7 @@ CommBaseManager<IMCMessage, MessageInfo, SystemImcMsgCommInfo, ImcId16, CommMana
         // Indicates the transport to use, next we will adjust this value with respect with the available transports, both local and remote
         ArrayList<TransportPreference> transportChoiceToSend = new ArrayList<>(transportPreferenceToUse);
 
-        // Let us see if it was indicated to send the message through a specific transport
+        // Let us see if it was indicated to send the message through a specific transport 判断消息是否已指定经由某一特定传输通道发送
         TransportPreference transportPreferenceRequested = TransportPreference.ANY;
         if (sendProperties != null && StringUtils.isTokenInList(sendProperties, "UDP"))
             transportPreferenceRequested = TransportPreference.UDP;
@@ -1402,6 +1404,7 @@ CommBaseManager<IMCMessage, MessageInfo, SystemImcMsgCommInfo, ImcId16, CommMana
 
         // Let us send the message by the preferred transport or the default one on the system by the order UDP, TCP
         // this depends on the transports available locally and on the system
+        //优先采用首选传输通道发送消息；若无首选通道，则按照 UDP、TCP 的顺序选用系统默认通道
         try {
             if (transportChoiceToSend.isEmpty()) {
                 throw new NoTransportAvailableException(I18n.textf("No transport available to send message %message to %system.", 

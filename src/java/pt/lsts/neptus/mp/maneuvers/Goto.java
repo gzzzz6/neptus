@@ -258,7 +258,7 @@ public class Goto extends Maneuver implements IMCSerialization, LocatedManeuver,
         }
     }
     
-	public IMCMessage serializeToIMC() {
+	public IMCMessage serializeToIMC() {  //序列化为 IMC 报文
 		pt.lsts.imc.Goto gotoManeuver = new pt.lsts.imc.Goto();
 		gotoManeuver.setTimeout(this.getMaxTime());
 		LocationType l = getManeuverLocation();
